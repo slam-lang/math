@@ -1,0 +1,46 @@
+class imath
+  var temp int.SIZE
+
+  {
+  args: int[a] int[b]
+  result: int
+
+  returns a ^ b
+  }
+  proc pow 2 1
+    math.temp swap put disc
+    copy
+    do
+      covr *
+
+      math.temp
+      math.temp read 1 -
+      put disc
+      math.temp read
+      0 >
+    end
+    swap disc
+
+    ret
+  end
+  
+  proc log2 1 1
+    -1
+    do
+      swap 2 /% disc
+      swap 1 +
+
+      covr 0 !=
+    end
+    swap disc
+
+    ret
+  end
+
+  proc squared 1 1
+    copy *
+
+    ret
+  end
+end
+
