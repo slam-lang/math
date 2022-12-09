@@ -1,7 +1,7 @@
+inc "imath.slm"
 inc "stdlib.slm"
 
 class float
-  head oper proc fromint 1 1
   head oper proc round 1 1
   head oper proc abs 1 1
   head oper proc toint 1 1

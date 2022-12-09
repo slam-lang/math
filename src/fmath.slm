@@ -1,13 +1,6 @@
 inc "fmath.slh"
 
 class float
-  oper proc fromint 1 1
-    asm "fild qword[rsp]"
-    asm "fstp qword[rsp]"
-
-    ret
-  end
-
   oper proc round 1 1
     asm "fld qword[rsp]"
     asm "frndint"
@@ -19,7 +12,7 @@ class float
   oper proc abs 1 1
     asm "fld qword[rsp]"
     asm "fabs"
-    asm "fistp qword[rsp]"
+    asm "fstp qword[rsp]"
 
     ret
   end
@@ -111,7 +104,6 @@ class float
     var val 8
 
     val swap put
-
     asm "pop rax"
     asm "fld qword[rax]"
     asm "fldz"
@@ -121,7 +113,7 @@ class float
     asm "sahf"
     asm "mov rcx, 0"
     asm "mov rdx, 1"
-    asm "cmovb rcx, rdx"
+    asm "cmova rcx, rdx"
     asm "push rcx"
 
     ret
@@ -134,15 +126,10 @@ class float
     val swap put disc
 
     val read float.isneg
-    copy if 
-      "+" cstr.print
-    end
     ! if 
       "-" cstr.print
-      val read
-      -1 float.fromint float.mul
-      val swap put disc
     end
+    val copy read float.abs put disc
     val read float.toint
     copy 0 == if "0" cstr.print end
     copy 0 != if copy int.cstr cstr.print end
@@ -157,7 +144,7 @@ class float
     0
     do
       val read 
-      10 float.fromint float.mul
+      10 int.float float.mul
       copy float.toint 
       copy 0 > ! if -1 * end
       '0' +

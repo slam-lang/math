@@ -1,5 +1,10 @@
-class imath
-  var temp int.SIZE
+class int
+  oper proc float 1 1
+    asm "fild qword[rsp]"
+    asm "fstp qword[rsp]"
+
+    ret
+  end
 
   {
   args: int[a] int[b]
@@ -8,15 +13,17 @@ class imath
   returns a ^ b
   }
   proc pow 2 1
-    imath.temp swap put disc
+    var tmp 8
+
+    tmp swap put disc
     copy
     do
       covr *
 
-      imath.temp
-      imath.temp read 1 -
+      tmp
+      tmp read 1 -
       put disc
-      imath.temp read
+      tmp read
       0 >
     end
     swap disc
@@ -42,46 +49,46 @@ class imath
 
     ret
   end
-  
-  var rstart int.SIZE
-  var rend int.SIZE
-  var rmid int.SIZE
-  var rres int.SIZE
 
   proc sqRoot 1 1
+    var rstart 8
+    var rend 8
+    var rmid 8
+    var rres 8
+
     copy 1 ==
     covr 0 == ||
-    if [ ret ]
-    copy 0 < if [ disc 0 ret ]
-    imath.rstart 1 put disc
-    imath.rend covr 2 / put disc
+    if ret end
+    copy 0 < if disc 0 ret end
+    rstart 1 put disc
+    rend covr 2 /% disc put disc
     do
-      imath.rmid
-      imath.rstart read imath.rend read + 2 /
+      rmid
+      rstart read rend read + 2 /% disc
       put disc
 
       copy
-      imath.rmid read copy *
-      == if [
-        disc imath.rmid read ret
-      ]
+      rmid read copy *
+      == if
+        disc rmid read ret
+      end
       
       copy
-      imath.rmid read copy *
+      rmid read copy *
       < ! copy
-      if [
-        imath.rmid read 1 + imath.rstart swap put disc
-        imath.rmid read imath.rres swap put disc
-      ]
-      ! if [
-        imath.rmid read 1 - imath.rend swap put disc
-      ]
+      if
+        rmid read 1 + rstart swap put disc
+        rmid read rres swap put disc
+      end
+      ! if
+        rmid read 1 - rend swap put disc
+      end
 
-      imath.rstart read imath.rend read > !
+      rstart read rend read > !
     end
     disc
 
-    imath.rres read 
+    rres read 
 
     ret
   end
