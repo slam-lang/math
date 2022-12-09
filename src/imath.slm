@@ -8,15 +8,15 @@ class imath
   returns a ^ b
   }
   proc pow 2 1
-    math.temp swap put disc
+    imath.temp swap put disc
     copy
     do
       covr *
 
-      math.temp
-      math.temp read 1 -
+      imath.temp
+      imath.temp read 1 -
       put disc
-      math.temp read
+      imath.temp read
       0 >
     end
     swap disc
@@ -39,6 +39,49 @@ class imath
 
   proc squared 1 1
     copy *
+
+    ret
+  end
+  
+  var rstart int.SIZE
+  var rend int.SIZE
+  var rmid int.SIZE
+  var rres int.SIZE
+
+  proc sqRoot 1 1
+    copy 1 ==
+    covr 0 == ||
+    if [ ret ]
+    copy 0 < if [ disc 0 ret ]
+    imath.rstart 1 put disc
+    imath.rend covr 2 / put disc
+    do
+      imath.rmid
+      imath.rstart read imath.rend read + 2 /
+      put disc
+
+      copy
+      imath.rmid read copy *
+      == if [
+        disc imath.rmid read ret
+      ]
+      
+      copy
+      imath.rmid read copy *
+      < ! copy
+      if [
+        imath.rmid read 1 + imath.rstart swap put disc
+        imath.rmid read imath.rres swap put disc
+      ]
+      ! if [
+        imath.rmid read 1 - imath.rend swap put disc
+      ]
+
+      imath.rstart read imath.rend read > !
+    end
+    disc
+
+    imath.rres read 
 
     ret
   end

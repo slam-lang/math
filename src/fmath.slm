@@ -1,96 +1,181 @@
-class fmath
-  proc sign 1 1
-    4294967296 &&
-    0 !=
+inc "fmath.slh"
+
+class float
+  oper proc fromint 1 1
+    asm "fild qword[rsp]"
+    asm "fstp qword[rsp]"
 
     ret
   end
 
-  proc exp 1 1
-    8388608 /% disc
-    01FFh {2^9 - 1}
-    &&
+  oper proc round 1 1
+    asm "fld qword[rsp]"
+    asm "frndint"
+    asm "fstp qword[rsp]"
 
     ret
   end
 
-  proc mant 1 1
-    16777215 {2 ^ 24 - 1}
-    &&
+  oper proc abs 1 1
+    asm "fld qword[rsp]"
+    asm "fabs"
+    asm "fistp qword[rsp]"
 
     ret
   end
 
-  var temp int.SIZE
-  var working int.SIZE
+  oper proc toint 1 1
+    asm "fld qword[rsp]"
+    asm "fistp qword[rsp]"
 
-  proc print 1 0
-    {TODO: implement}
-    float.working swap put disc
-
-    float.working read (float.sign) (int.print)
-    float.working read (float.mant) (int.cstr) (cstr.print)
-    "*2^" (cstr.print)
-    float.working read (float.exp) 127 - (int.print)
-    float.working read (int.print) 
     ret
   end
 
-  proc fromint 1 1
-    copy 0 == if [disc 0 ret]
-    float.temp swap put disc
-    float.working 0 put disc
+  oper proc add 2 1
+    var rax 8
+    var rbx 8
     
-    {sign}
-    float.temp read
-    4294967296 &&
-    float.working read ||
-    float.working swap
-    put disc
+    rbx swap put disc
+    rax swap put disc
+
+    rbx rax
+    asm "pop rax"
+    asm "pop rbx"
+    asm "sub rsp, 16" disc
+    asm "fld qword[rax]"
+    asm "fld qword[rbx]"
+    asm "faddp"
+    asm "fstp qword[rsp]"
+
+    ret
+  end
+
+  oper proc sub 2 1
+    var rax 8
+    var rbx 8
     
-    {exponent}
-    float.temp read (math.log2)
-    127 +
-    8388608 * {2 ^ 23}
-    float.working read ||
-    float.working swap
-    put disc
+    rbx swap put disc
+    rax swap put disc
 
-    {mantissa}
-    float.working read (float.exp) 128 -
-    2 swap (math.pow)
-    float.temp read ^
+    rbx rax
+    asm "pop rax"
+    asm "pop rbx"
+    asm "sub rsp, 16" disc
+    asm "fld qword[rax]"
+    asm "fld qword[rbx]"
+    asm "fsubp"
+    asm "fstp qword[rsp]"
 
-    float.working read (float.exp) 127 - 23 < !
-    if [
-      float.working read (float.exp) 127 - 23 -
-      do 
-        swap 2 /% disc
-        swap 1 -
-        copy
-        0 >
-      end
-      disc
-    ]
-    float.working read (float.exp) 127 - 23 <
-    if [
-      float.working read (float.exp) 127 - 23 swap -
-      do 
-        swap 2 *
-        swap 1 -
-        copy
-        0 >
-      end
-      disc
-    ]
-    16777215 {2 ^ 24 - 1}
-    &&
+    ret
+  end
 
-    float.working read ||
-    float.working swap
-    put disc
+  oper proc div 2 1
+    var rax 8
+    var rbx 8
+    
+    rbx swap put disc
+    rax swap put disc
 
-    float.working read
+    rbx rax
+    asm "pop rax"
+    asm "pop rbx"
+    asm "sub rsp, 16" disc
+    asm "fld qword[rax]"
+    asm "fld qword[rbx]"
+    asm "fdivp"
+    asm "fstp qword[rsp]"
+
+    ret
+  end
+
+  oper proc mul 2 1
+    var rax 8
+    var rbx 8
+    
+    rbx swap put disc
+    rax swap put disc
+
+    rbx rax
+    asm "pop rax"
+    asm "pop rbx"
+    asm "sub rsp, 16" disc
+    asm "fld qword[rax]"
+    asm "fld qword[rbx]"
+    asm "fmulp"
+    asm "fstp qword[rsp]"
+
+    ret
+  end
+
+  oper proc isneg 1 1
+    var val 8
+
+    val swap put
+
+    asm "pop rax"
+    asm "fld qword[rax]"
+    asm "fldz"
+    asm "fcompp"
+    asm "fstsw ax"
+    asm "fwait"
+    asm "sahf"
+    asm "mov rcx, 0"
+    asm "mov rdx, 1"
+    asm "cmovb rcx, rdx"
+    asm "push rcx"
+
+    ret
+  end
+
+  oper proc print 1 0
+    var val 8
+    var char 8
+
+    val swap put disc
+
+    val read float.isneg
+    copy if 
+      "+" cstr.print
+    end
+    ! if 
+      "-" cstr.print
+      val read
+      -1 float.fromint float.mul
+      val swap put disc
+    end
+    val read float.toint
+    copy 0 == if "0" cstr.print end
+    copy 0 != if copy int.cstr cstr.print end
+    disc
+    val read
+    val read float.round swap
+    float.sub
+    val swap put disc
+
+    "." cstr.print
+
+    0
+    do
+      val read 
+      10 float.fromint float.mul
+      copy float.toint 
+      copy 0 > ! if -1 * end
+      '0' +
+      char 0 put disc
+      char swap putc disc
+      char cstr.print
+
+      copy float.round swap
+      float.sub
+      val swap put disc
+
+      1 +
+      copy 5 <
+    end
+    disc
+
+    cstr.cr
+
     ret
   end
 end
