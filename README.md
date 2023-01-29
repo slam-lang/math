@@ -1,1 +1,1 @@
-# slam-shot
+# slam-math
