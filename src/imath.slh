@@ -1,4 +1,7 @@
 class int
   head oper proc float 1 1
+  head oper proc pow 2 1
+  head oper proc log2 1 1
+  head oper proc squared 1 1
 end
 

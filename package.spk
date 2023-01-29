@@ -1,3 +1,5 @@
 "src" src
+"imath.slh" lib
 "imath.slm" lib
+"fmath.slh" lib
 "fmath.slm" lib
